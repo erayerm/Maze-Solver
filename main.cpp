@@ -9,11 +9,16 @@ const int   lineCount = 9;
 const int   columnCount = 9;
 int         start_line_coordinate = 0;
 int         start_column_coordinate = 0;
+int         finish_line = 8;
+int         finish_column = 8;
+bool        isEnd = false;
 int         matrix[lineCount][columnCount];
+
 vector<int> movementLine;
 vector<int> movementColumn;
 
 void        move(int, int);
+void        control(int, int);
 
 int main()
 {
@@ -21,7 +26,8 @@ int main()
 	//in matrix;
 	//0 for empty roads
 	//1 for walls
-
+	//2 for right way
+	
     for (int i = 0; i < lineCount; i++)
     {
         for (int j = 0; j < columnCount; j++)
@@ -91,64 +97,124 @@ void move(int start_line, int start_column) {
 	
 	//first query is for not exceed mazes borders
 	//second query is for don't go the way it came
-    if (start_line + 1 < lineCount && d != up) {
+	//third query is for when it found the solution program still continue. It back to the last turning point. We stop this with isEnd bool.
+    if (start_line + 1 < lineCount && d != up && !isEnd) {
 		//asking this way is empty or not
         if (matrix[start_line + 1][start_column] == 0) {
 			//d for direction
             d = down;
+			//controlling it found the finish line or not
+			control(start_line + 1, start_column);
 			//adding coordinates to vectors
             movementLine.push_back(start_line + 1);
             movementColumn.push_back(start_column);
 			//calling this function again for a new move
 			//this way if it choose the wrong path it returns and continue where it left off
             move(start_line + 1, start_column);
+			//if it fails and come back to here we need to change direction again
+			d = down;
+			//if it returns to this function that means it found the finish line or it fails
+			//if it fails we're delete the wrong coordinates from vectors
+            if (!isEnd) {
+                movementLine.pop_back();
+                movementColumn.pop_back();
+            }
         }
     }
 
 	//first query is for not exceed mazes borders
 	//second query is for don't go the way it came
-    if (start_line - 1 > -1 && d != down) {
+	//third query is for when it found the solution program still continue. It back to the last turning point. We stop this with isEnd bool.
+    if (start_line - 1 > -1 && d != down && !isEnd) {
 		//asking this way is empty or not
         if (matrix[start_line - 1][start_column] == 0) {
 			//d for direction
             d = up;
+			//controlling it found the finish line or not
+			control(start_line - 1, start_column);
 			//adding coordinates to vectors
             movementLine.push_back(start_line - 1);
             movementColumn.push_back(start_column);
 			//calling this function again for a new move
 			//this way if it choose the wrong path it returns and continue where it left off
             move(start_line - 1, start_column);
+			//if it fails and come back to here we need to change direction again
+			d = up;
+			//if it returns to this function that means it found the finish line or it fails
+			//if it fails we're delete the wrong coordinates from vectors
+            if (!isEnd) {
+                movementLine.pop_back();
+                movementColumn.pop_back();
+            }
         }
     }
 
 	//first query is for not exceed mazes borders
 	//second query is for don't go the way it came
-    if (start_column + 1 < lineCount && d != rightDirection) {
+	//third query is for when it found the solution program still continue. It back to the last turning point. We stop this with isEnd bool.
+    if (start_column + 1 < lineCount && d != rightDirection && !isEnd) {
 		//asking this way is empty or not
         if (matrix[start_line][start_column + 1] == 0) {
 			//d for direction
             d = leftDirection;
+			//controlling it found the finish line or not
+			control(start_line, start_column + 1);
 			//adding coordinates to vectors
             movementLine.push_back(start_line);
             movementColumn.push_back(start_column + 1);
 			//calling this function again for a new move
 			//this way if it choose the wrong path it returns and continue where it left off
             move(start_line, start_column + 1);
+			//if it fails and come back to here we need to change direction again
+			d = leftDirection;
+			//if it returns to this function that means it found the finish line or it fails
+			//if it fails we're delete the wrong coordinates from vectors
+            if (!isEnd) {
+                movementLine.pop_back();
+                movementColumn.pop_back();
+            }
         }
     }
+	
 	//first query is for not exceed mazes borders
 	//second query is for don't go the way it came
-    if (start_column - 1 > -1 && d != leftDirection) {
+	//third query is for when it found the solution program still continue. It back to the last turning point. We stop this with isEnd bool.
+    if (start_column - 1 > -1 && d != leftDirection && !isEnd) {
 		//asking this way is empty or not
         if (matrix[start_line][start_column - 1] == 0) {
 			//d for direction
             d = rightDirection;
+			//controlling it found the finish line or not
+			control(start_line, start_column - 1);
 			//adding coordinates to vectors
             movementLine.push_back(start_line);
             movementColumn.push_back(start_column - 1);
 			//calling this function again for a new move
 			//this way if it choose the wrong path it returns and continue where it left off
             move(start_line, start_column - 1);
+			//if it fails and come back to here we need to change direction again
+			d = rightDirection;
+			//if it returns to this function that means it found the finish line or it fails
+			//if it fails we're delete the wrong coordinates from vectors
+            if (!isEnd) {
+                movementLine.pop_back();
+                movementColumn.pop_back();
+            }
         }
+    }
+	//if it found the finish line we're change our way "0" to "2"
+	if (isEnd) {
+        for (int i = 0; i < movementLine.size(); i++) {
+            matrix[movementLine[i]][movementColumn[i]] = 2;
+        }
+        matrix[start_line_coordinate][start_column_coordinate] = 2;
+    }
+}
+
+
+void control(int start_line, int start_column) {
+	//if it found the finish line change isEnd false to true
+    if (start_line == finish_line && start_column == finish_column) {
+        isEnd = true;
     }
 }
