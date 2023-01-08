@@ -4,18 +4,19 @@
 
 using namespace std;
 
-enum        Direction { rightDirection, leftDirection, up, down, start };
-Direction   d = start;
-const int   lineCount = 9;
+enum        Direction { rightDirection, leftDirection, upDirection, downDirection, toBeDecided};
+Direction   direction = toBeDecided;
+
+const int   rowCount = 9;
 const int   columnCount = 9;
-int         start_line_coordinate = 0;
+int         start_row_coordinate = 0;
 int         start_column_coordinate = 0;
-int         finish_line = 8;
+int         finish_row = 8;
 int         finish_column = 8;
 bool        isEnd = false;
-int         matrix[lineCount][columnCount];
+int         matrix[rowCount][columnCount];
 
-vector<int> movementLine;
+vector<int> movementRow;
 vector<int> movementColumn;
 
 void        move(int, int);
@@ -27,174 +28,174 @@ void        creatingMatrix();
 int main()
 {
 	creatingMatrix();
-	move(start_line_coordinate, start_column_coordinate);
+	move(start_row_coordinate, start_column_coordinate);
 	show();
-	
+
 	return 0;
 }
 
-void move(int start_line, int start_column) {
-	
-	//first query is for not exceed mazes borders
-	//second query is for don't go the way it came
-	//third query is for when it found the solution program still continue. It back to the last turning point. We stop this with isEnd bool.
-    	if (start_line + 1 < lineCount && d != up && !isEnd) {
-		//asking this way is empty or not
-        	if (matrix[start_line + 1][start_column] == 0) {
-	    		//d for direction
-            		d = down;
-			//controlling it found the finish line or not
-			control(start_line + 1, start_column);
-			//adding coordinates to vectors
-			movementLine.push_back(start_line + 1);
-			movementColumn.push_back(start_column);
-			//calling this function again for a new move
-			//this way if it choose the wrong path it returns and continue where it left off
-			move(start_line + 1, start_column);
-			//if it fails and come back to here we need to change direction again
-			d = down;
-			//if it returns to this function that means it found the finish line or it fails
-			//if it fails we're delete the wrong coordinates from vectors
-			if (!isEnd) {
-				movementLine.pop_back();
-				movementColumn.pop_back();
-			}
-        	}
-    	}
+void move(int row, int column) {
 
-	//first query is for not exceed mazes borders
-	//second query is for don't go the way it came
-	//third query is for when it found the solution program still continue. It back to the last turning point. We stop this with isEnd bool.
-	if (start_line - 1 > -1 && d != down && !isEnd) {
-		//asking this way is empty or not
-		if (matrix[start_line - 1][start_column] == 0) {
+	//the first query is for not exceeding mazes borders
+	//the second query is for don't go the way which it came.
+	//the third query is for when it found the solution program still continues. It returns back to the last turning point. We stop this with isEnd bool.
+	if (row + 1 < rowCount && direction != upDirection && !isEnd) {
+		//askes is this way empty or not
+		if (matrix[row + 1][column] == 0) {
 			//d for direction
-			d = up;
-			//controlling it found the finish line or not
-			control(start_line - 1, start_column);
+			direction = downDirection;
+			//controlling if it found the finish row or not.
+			control(row + 1, column);
 			//adding coordinates to vectors
-			movementLine.push_back(start_line - 1);
-			movementColumn.push_back(start_column);
+			movementRow.push_back(row + 1);
+			movementColumn.push_back(column);
 			//calling this function again for a new move
-			//this way if it choose the wrong path it returns and continue where it left off
-			move(start_line - 1, start_column);
-			//if it fails and come back to here we need to change direction again
-			d = up;
-			//if it returns to this function that means it found the finish line or it fails
-			//if it fails we're delete the wrong coordinates from vectors
+			//this way if it choose the wrong path it returns and continues where it left off
+			move(row + 1, column);
+			//if it failed and come back to here we need to change direction again.
+			direction = downDirection;
+			//if it returns to this function that means it found the finish row or it failed.
+			//if it failed we're popping back the wrong coordinates from vectors
 			if (!isEnd) {
-				movementLine.pop_back();
+				movementRow.pop_back();
 				movementColumn.pop_back();
 			}
 		}
 	}
 
-	//first query is for not exceed mazes borders
-	//second query is for don't go the way it came
-	//third query is for when it found the solution program still continue. It back to the last turning point. We stop this with isEnd bool.
-	if (start_column + 1 < lineCount && d != rightDirection && !isEnd) {
-		//asking this way is empty or not
-		if (matrix[start_line][start_column + 1] == 0) {
+	//the first query is for not exceeding mazes borders
+	//the second query is for don't go the way which it came.
+	//the third query is for when it found the solution program still continues. It returns back to the last turning point. We stop this with isEnd bool.
+	if (row - 1 > -1 && direction != downDirection && !isEnd) {
+		//askes is this way empty or not
+		if (matrix[row - 1][column] == 0) {
 			//d for direction
-			d = leftDirection;
-			//controlling it found the finish line or not
-			control(start_line, start_column + 1);
+			direction = upDirection;
+			//controlling if it found the finish row or not.
+			control(row - 1, column);
 			//adding coordinates to vectors
-			movementLine.push_back(start_line);
-			movementColumn.push_back(start_column + 1);
+			movementRow.push_back(row - 1);
+			movementColumn.push_back(column);
 			//calling this function again for a new move
-			//this way if it choose the wrong path it returns and continue where it left off
-			move(start_line, start_column + 1);
-			//if it fails and come back to here we need to change direction again
-			d = leftDirection;
-			//if it returns to this function that means it found the finish line or it fails
-			//if it fails we're delete the wrong coordinates from vectors
+			//this way if it choose the wrong path it returns and continues where it left off
+			move(row - 1, column);
+			//if it failed and come back to here we need to change direction again.
+			direction = upDirection;
+			//if it returns to this function that means it found the finish row or it fails
+			//if it failed we're popping back the wrong coordinates from vectors
 			if (!isEnd) {
-				movementLine.pop_back();
+				movementRow.pop_back();
 				movementColumn.pop_back();
 			}
 		}
 	}
-	
-	//first query is for not exceed mazes borders
-	//second query is for don't go the way it came
-	//third query is for when it found the solution program still continue. It back to the last turning point. We stop this with isEnd bool.
-	if (start_column - 1 > -1 && d != leftDirection && !isEnd) {
-		//asking this way is empty or not
-		if (matrix[start_line][start_column - 1] == 0) {
+
+	//the first query is for not exceeding mazes borders
+	//the second query is for don't go the way which it came.
+	//the third query is for when it found the solution program still continues. It returns back to the last turning point. We stop this with isEnd bool.
+	if (column + 1 < rowCount && direction != leftDirection && !isEnd) { //*
+		//askes this way is empty or not
+		if (matrix[row][column + 1] == 0) {
 			//d for direction
-			d = rightDirection;
-			//controlling it found the finish line or not
-			control(start_line, start_column - 1);
+			direction = rightDirection; //*
+			//controlling if it found the finish row or not.
+			control(row, column + 1);
 			//adding coordinates to vectors
-			movementLine.push_back(start_line);
-            		movementColumn.push_back(start_column - 1);
+			movementRow.push_back(row);
+			movementColumn.push_back(column + 1);
 			//calling this function again for a new move
-			//this way if it choose the wrong path it returns and continue where it left off
-            		move(start_line, start_column - 1);
-			//if it fails and come back to here we need to change direction again
-			d = rightDirection;
-			//if it returns to this function that means it found the finish line or it fails
-			//if it fails we're delete the wrong coordinates from vectors
-            		if (!isEnd) {
-				movementLine.pop_back();
+			//this way if it choose the wrong path it returns and continues where it left off
+			move(row, column + 1);
+			//if it failed and come back to here we need to change direction again.
+			direction = rightDirection; //*
+			//if it returns to this function that means it found the finish row or it fails
+			//if it failed we're popping back the wrong coordinates from vectors
+			if (!isEnd) {
+				movementRow.pop_back();
 				movementColumn.pop_back();
 			}
 		}
 	}
-	//if it found the finish line we're change our way "0" to "2"
+
+	//the first query is for not exceeding mazes borders
+	//the second query is for don't go the way which it came.
+	//the third query is for when it found the solution program still continues. It returns back to the last turning point. We stop this with isEnd bool.
+	if (column - 1 > -1 && direction != rightDirection && !isEnd) {
+		//askes this way is empty or not
+		if (matrix[row][column - 1] == 0) {
+			//d for direction
+			direction = leftDirection;
+			//controlling if it found the finish row or not.
+			control(row, column - 1);
+			//adding coordinates to vectors
+			movementRow.push_back(row);
+			movementColumn.push_back(column - 1);
+			//calling this function again for a new move
+			//this way if it choose the wrong path it returns and continues where it left off
+			move(row, column - 1);
+			//if it failed and come back to here we need to change direction again.
+			direction = leftDirection;
+			//if it returns to this function that means it found the finish row or it fails
+			//if it failed we're popping back the wrong coordinates from vectors
+			if (!isEnd) {
+				movementRow.pop_back();
+				movementColumn.pop_back();
+			}
+		}
+	}
+	//if it found the finish row we change our way from "0" to "2"
 	if (isEnd) {
-		for (int i = 0; i < movementLine.size(); i++) {
-		    matrix[movementLine[i]][movementColumn[i]] = 2;
+		for (int i = 0; i < movementRow.size(); i++) {
+			matrix[movementRow[i]][movementColumn[i]] = 2;
 		}
-        	matrix[start_line_coordinate][start_column_coordinate] = 2;
-    	}
+		matrix[start_row_coordinate][start_column_coordinate] = 2;
+	}
 }
 
 
-void control(int start_line, int start_column) {
-	//if it found the finish line change isEnd false to true
-	if (start_line == finish_line && start_column == finish_column) {
+void control(int row, int column) {
+	//if it found the finish row change isEnd false to true
+	if (row == finish_row && column == finish_column) {
 		isEnd = true;
 	}
 }
 
 //this function is for showing the solution on console
 void show() {
-	for (int i = 0; i < lineCount; i++) {
+	for (int i = 0; i < rowCount; i++) {
 		for (int j = 0; j < columnCount; j++) {
-			switch(matrix[i][j]){
-				case 0:
-					setconsolecolor(0, 8);
-					cout << "  ";
-					break;
-				case 1:
-					setconsolecolor(0, 4);
-					cout << "  ";
-					break;
-				case 2:
-					setconsolecolor(0, 9);
-					cout << "  ";
-					break;
+			switch (matrix[i][j]) {
+			case 0:
+				setconsolecolor(0, 8);
+				cout << "  ";
+				break;
+			case 1:
+				setconsolecolor(0, 4);
+				cout << "  ";
+				break;
+			case 2:
+				setconsolecolor(0, 9);
+				cout << "  ";
+				break;
 			}
-        	}
+		}
 		cout << endl;
-        	setconsolecolor(0, 0);
+		setconsolecolor(0, 0);
 	}
 }
 
 //creating maze in this function
-void creatingMatrix () {
-	
+void creatingMatrix() {
+
 	//0 for empty roads
 	//1 for walls
 	//2 for right way
-	
-	for (int i = 0; i < lineCount; i++) {
-        	for (int j = 0; j < columnCount; j++) {
-            		matrix[i][j] = 0;
-        	}
-    	}
+
+	for (int i = 0; i < rowCount; i++) {
+		for (int j = 0; j < columnCount; j++) {
+			matrix[i][j] = 0;
+		}
+	}
 
 	matrix[1][0] = 1;
 	matrix[2][0] = 1;
